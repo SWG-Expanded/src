@@ -1,0 +1,162 @@
+if (${CMAKE_BUILD_TYPE} STREQUAL "MINSIZEREL" AND EXISTS "${PROJECT_SOURCE_DIR}/src/linux/LoginServer.profdata")
+	add_compile_options(-fprofile-instr-use=${PROJECT_SOURCE_DIR}/src/linux/LoginServer.profdata)
+endif()
+
+set(SHARED_SOURCES
+    shared/CentralServerConnection.cpp
+    shared/CentralServerConnection.h
+    shared/ClientConnection.cpp
+    shared/ClientConnection.h
+    shared/ConfigLoginServer.cpp
+    shared/ConfigLoginServer.h
+    shared/ConsoleCommandParser.cpp
+    shared/ConsoleCommandParser.h
+    shared/ConsoleCommandParserLoginServer.cpp
+    shared/ConsoleCommandParserLoginServer.h
+    shared/ConsoleManager.cpp
+    shared/ConsoleManager.h
+    shared/CSToolConnection.cpp
+    shared/CSToolConnection.h
+    shared/DatabaseConnection.cpp
+    shared/DatabaseConnection.h
+    shared/FirstLoginServer.h
+    shared/LoginServer.cpp
+    shared/LoginServer.h
+    shared/LoginServerRemoteDebugConnection.cpp
+    shared/LoginServerRemoteDebugConnection.h
+    shared/LoginServerRemoteDebugSetup.cpp
+    shared/LoginServerRemoteDebugSetup.h
+    shared/PingConnection.cpp
+    shared/PingConnection.h
+    shared/PurgeManager.cpp
+    shared/PurgeManager.h
+    shared/SessionApiClient.cpp
+    shared/SessionApiClient.h
+    shared/TaskChangeStationId.cpp
+    shared/TaskChangeStationId.h
+    shared/TaskClaimRewards.cpp
+    shared/TaskClaimRewards.h
+    shared/TaskCreateCharacter.cpp
+    shared/TaskCreateCharacter.h
+    shared/TaskDeleteCharacter.cpp
+    shared/TaskDeleteCharacter.h
+    shared/TaskEnableCharacter.cpp
+    shared/TaskEnableCharacter.h
+    shared/TaskGetAccountForPurge.cpp
+    shared/TaskGetAccountForPurge.h
+    shared/TaskGetAvatarList.cpp
+    shared/TaskGetAvatarList.h
+    shared/TaskGetCharactersForDelete.cpp
+    shared/TaskGetCharactersForDelete.h
+    shared/TaskGetClusterList.cpp
+    shared/TaskGetClusterList.h
+    shared/TaskGetValidationData.cpp
+    shared/TaskGetValidationData.h
+	shared/TaskMapAccount.h
+	shared/TaskMapAccount.cpp
+    shared/TaskRegisterNewCluster.cpp
+    shared/TaskRegisterNewCluster.h
+    shared/TaskRenameCharacter.cpp
+    shared/TaskRenameCharacter.h
+    shared/TaskRestoreCharacter.cpp
+    shared/TaskRestoreCharacter.h
+    shared/TaskSetPurgeStatus.cpp
+    shared/TaskSetPurgeStatus.h
+    shared/TaskToggleCharacterDisable.cpp
+    shared/TaskToggleCharacterDisable.h
+    shared/TaskToggleCompletedTutorial.cpp
+    shared/TaskToggleCompletedTutorial.h
+    shared/TaskUpdatePurgeAccountList.cpp
+    shared/TaskUpdatePurgeAccountList.h
+    shared/TaskUpgradeAccount.cpp
+    shared/TaskUpgradeAccount.h
+)
+
+if(WIN32)
+	set(PLATFORM_SOURCES
+		win32/FirstLoginServer.cpp
+		win32/WinMain.cpp
+	)
+else()
+	set(PLATFORM_SOURCES
+		linux/main.cpp
+            shared/TaskMapAccount.h shared/TaskMapAccount.cpp)
+endif()
+
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedCommandParser/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedCompression/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedDatabaseInterface/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedDebug/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedFile/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedFoundation/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedFoundationTypes/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedGame/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedLog/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedMath/include/public
+    
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedMessageDispatch/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedNetwork/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedNetworkMessages/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedRandom/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedSynchronization/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedThread/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedUtility/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/server/library/serverKeyShare/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/server/library/serverNetworkMessages/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/server/library/serverUtility/include/public
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/archive/include
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/localization/include
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/localizationArchive/include/public
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/singleton/include
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/unicode/include
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/unicodeArchive/include/public
+    ${SWG_EXTERNALS_SOURCE_DIR}/3rd/library/platform/projects
+    ${SWG_EXTERNALS_SOURCE_DIR}/3rd/library/platform/utils
+    ${SWG_EXTERNALS_SOURCE_DIR}/3rd/library/udplibrary
+    ${SWG_EXTERNALS_SOURCE_DIR}/3rd/library/webAPI
+)
+
+add_executable(LoginServer
+	${SHARED_SOURCES}
+	${PLATFORM_SOURCES}
+)
+
+target_link_libraries(LoginServer
+    sharedCommandParser
+    sharedCompression
+    sharedDatabaseInterface
+    sharedDatabaseInterface_oci
+    sharedDebug
+    sharedFile
+    sharedFoundation
+    sharedGame
+    sharedLog
+    sharedMath
+    
+    sharedMessageDispatch
+    sharedNetwork
+    sharedNetworkMessages
+    sharedRandom
+    sharedSynchronization
+    sharedThread
+    sharedUtility
+    serverKeyShare
+    serverNetworkMessages
+    serverUtility
+    archive
+    crypto
+    fileInterface
+    localization
+    localizationArchive
+    unicode
+    unicodeArchive
+    Base
+    CommonAPI
+    LoginAPI
+    MonAPI2
+    webAPI
+    ${CURL_LIBRARIES}
+    ${CMAKE_DL_LIBS}
+)

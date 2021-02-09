@@ -1,0 +1,109 @@
+if (${CMAKE_BUILD_TYPE} STREQUAL "MINSIZEREL" AND EXISTS "${PROJECT_SOURCE_DIR}/src/linux/ChatServer.profdata")
+	add_compile_options(-fprofile-instr-use=${PROJECT_SOURCE_DIR}/src/linux/ChatServer.profdata)
+endif()
+
+set(SHARED_SOURCES
+    shared/CentralServerConnection.cpp
+    shared/CentralServerConnection.h
+    shared/ChatInterface.cpp
+    shared/ChatInterface.h
+    shared/ChatServerAvatarOwner.cpp
+    shared/ChatServerAvatarOwner.h
+    shared/ChatServer.cpp
+    shared/ChatServer.h
+    shared/ChatServerRoomOwner.cpp
+    shared/ChatServerRoomOwner.h
+    shared/ConfigChatServer.cpp
+    shared/ConfigChatServer.h
+    shared/ConnectionServerConnection.cpp
+    shared/ConnectionServerConnection.h
+    shared/CustomerServiceServerConnection.cpp
+    shared/CustomerServiceServerConnection.h
+    shared/FirstChatServer.cpp
+    shared/FirstChatServer.h
+    shared/GameServerConnection.cpp
+    shared/GameServerConnection.h
+    shared/PlanetServerConnection.h
+    shared/PlanetServerServerConnection.cpp
+    shared/ChatServerMetricsData.cpp
+    shared/ChatServerMetricsData.h
+    shared/VChatInterface.h
+    shared/VChatInterface.cpp
+)
+
+if(WIN32)
+	set(PLATFORM_SOURCES
+		win32/WinMain.cpp
+	)
+else()
+	set(PLATFORM_SOURCES
+		linux/main.cpp
+	)
+endif()
+
+add_definitions(-DEXTERNAL_DISTRO -DNAMESPACE=ChatSystem -DAPI_NAMESPACE=VChatSystem)
+
+include_directories(
+	${CMAKE_CURRENT_SOURCE_DIR}/shared
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedCompression/include/public
+	${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedDebug/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedFile/include/public
+	${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedFoundation/include/public
+	${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedFoundationTypes/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedLog/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedMath/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedMathArchive/include/public
+	
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedMessageDispatch/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedNetwork/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedNetworkMessages/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedRandom/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedThread/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/server/library/serverMetrics/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/server/library/serverNetworkMessages/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/server/library/serverUtility/include/public
+	${SWG_EXTERNALS_SOURCE_DIR}/ours/library/archive/include
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/localization/include
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/localizationArchive/include/public
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/singleton/include
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/unicode/include
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/unicodeArchive/include/public
+    ${SWG_EXTERNALS_SOURCE_DIR}/3rd/library/soePlatform/ChatAPI/projects
+    ${SWG_EXTERNALS_SOURCE_DIR}/3rd/library/soePlatform/ChatAPI/utils
+    ${SWG_EXTERNALS_SOURCE_DIR}/3rd/library/soePlatform/VChatAPI/projects/VChat
+    ${SWG_EXTERNALS_SOURCE_DIR}/3rd/library/soePlatform/VChatAPI/utils2.0/utils
+)
+
+add_executable(ChatServer
+	${SHARED_SOURCES}
+	${PLATFORM_SOURCES}
+)
+
+target_link_libraries(ChatServer
+    sharedCompression
+    sharedDebug
+    sharedFile
+    sharedFoundation
+    sharedLog
+    sharedMath
+    
+    sharedMessageDispatch
+    sharedNetwork
+    sharedNetworkMessages
+    sharedRandom
+    sharedSynchronization
+    sharedThread
+    sharedUtility
+    serverMetrics
+    serverNetworkMessages
+    serverUtility
+    archive
+    fileInterface
+    localization
+    localizationArchive
+    unicode
+    unicodeArchive
+    ChatMono
+    VChatAPI
+    ${CMAKE_DL_LIBS}
+)

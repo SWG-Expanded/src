@@ -1,0 +1,112 @@
+if (${CMAKE_BUILD_TYPE} STREQUAL "MINSIZEREL" AND EXISTS "${PROJECT_SOURCE_DIR}/src/linux/PlanetServer.profdata")
+	add_compile_options(-fprofile-instr-use=${PROJECT_SOURCE_DIR}/src/linux/PlanetServer.profdata)
+endif()
+
+set(SHARED_SOURCES
+    shared/CentralServerConnection.cpp
+    shared/CentralServerConnection.h
+    shared/ConfigPlanetServer.cpp
+    shared/ConfigPlanetServer.h
+    shared/ConsoleManager.cpp
+    shared/ConsoleManager.h
+    shared/ConsoleCommandParser.cpp
+    shared/ConsoleCommandParser.h
+    shared/FirstPlanetServer.h
+    shared/GameServerConnection.cpp
+    shared/GameServerConnection.h
+    shared/GameServerData.cpp
+    shared/GameServerData.h
+    shared/PlanetProxyObject.cpp
+    shared/PlanetProxyObject.h
+    shared/PlanetServer.cpp
+    shared/PlanetServer.h
+    shared/PlanetServerMetricsData.cpp
+    shared/PlanetServerMetricsData.h
+    shared/PreloadManager.cpp
+    shared/PreloadManager.h
+    shared/QuadtreeNode.cpp
+    shared/QuadtreeNode.h
+    shared/Scene.cpp
+    shared/Scene.h
+    shared/TaskConnection.cpp
+    shared/TaskConnection.h
+    shared/WatcherConnection.cpp
+    shared/WatcherConnection.h
+)
+
+if(WIN32)
+	set(PLATFORM_SOURCES
+		win32/FirstPlanetServer.cpp
+		win32/WinMain.cpp
+	)
+else()
+	set(PLATFORM_SOURCES
+		linux/main.cpp
+	)
+endif()
+
+include_directories(
+	${CMAKE_CURRENT_SOURCE_DIR}/shared
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedCommandParser/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedCompression/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedDebug/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedFile/include/public
+	${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedFoundation/include/public
+	${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedFoundationTypes/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedLog/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedMath/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedMathArchive/include/public
+	
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedMessageDispatch/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedNetwork/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedNetworkMessages/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedRandom/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedThread/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/shared/library/sharedUtility/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/server/library/serverMetrics/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/server/library/serverNetworkMessages/include/public
+    ${SWG_ENGINE_SOURCE_DIR}/server/library/serverUtility/include/public
+	${SWG_EXTERNALS_SOURCE_DIR}/ours/library/archive/include
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/singleton/include
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/unicode/include
+    ${SWG_EXTERNALS_SOURCE_DIR}/ours/library/unicodeArchive/include/public
+    ${SWG_EXTERNALS_SOURCE_DIR}/3rd/library/platform/projects
+    ${SWG_EXTERNALS_SOURCE_DIR}/3rd/library/platform/utils
+    ${SWG_EXTERNALS_SOURCE_DIR}/3rd/library/udplibrary
+	${SWG_EXTERNALS_SOURCE_DIR}/3rd/library/webAPI
+)
+
+add_executable(PlanetServer
+	${SHARED_SOURCES}
+	${PLATFORM_SOURCES}
+)
+
+target_link_libraries(PlanetServer
+    sharedCommandParser
+    sharedCompression
+    sharedDebug
+    sharedFile
+    sharedFoundation
+    sharedLog
+    sharedMath
+    
+    sharedMessageDispatch
+    sharedNetwork
+    sharedNetworkMessages
+    sharedRandom
+    sharedSynchronization
+    sharedThread
+    sharedUtility
+    serverMetrics
+    serverNetworkMessages
+    serverUtility
+    archive
+    fileInterface
+    localization
+    localizationArchive
+    unicode
+    unicodeArchive
+	webAPI
+	${CURL_LIBRARIES}
+    ${CMAKE_DL_LIBS}
+)
